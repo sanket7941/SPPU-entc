@@ -1,0 +1,160 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer:  sanket naik
+-- 
+-- Create Date:    10:21:16 07/18/2017 
+-- Design Name: 
+-- Module Name:    cpld - Behavioral 
+-- Project Name:   LCD display
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_unsigned.all;
+use IEEE.STD_LOGIC_arith.all;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all; 
+
+entity cpld is
+    Port ( rw : inout  STD_LOGIC; 
+           rs : out  STD_LOGIC;
+           en : out  STD_LOGIC;
+           din : out  STD_LOGIC_VECTOR (7 downto 0);
+           rst : in  STD_LOGIC;
+           clk : in  STD_LOGIC);
+end cpld;
+
+architecture Behavioral of cpld is
+type state_type is (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20);
+signal state : state_type;
+begin
+process(clk,rst)
+begin
+if rst ='1' then
+state <=s0;
+else if clk ='1' and clk' event then
+
+case state is
+	
+	when s0 =>   
+	rs <='0';
+	din <=x"30"; -- function set
+	en <='1';
+	state <= s1;
+	when s1 =>
+	en<='0';
+	state <= s2;
+	when s2=>   
+	rs<='0';
+	din<=x"0f"; --  display on cureser on blink
+	en <='1';
+	state<= s3;
+	when s3 =>
+	en<='0';
+	state <= s4;
+	when s4=>	
+	rs<='0';
+	din<=x"84"; --  set display address ROW 1
+	en <='1';
+	state<= s5;
+	when s5 =>
+	en<='0';
+	state <= s6;
+	when s6=>
+	rs<='0';
+	din<=x"01"; --	clear display
+	en <='1';
+	state<= s7;
+	when s7 =>
+	en<='0';
+	state <= s8;
+	when s8=>
+	rs<='1';
+	din<=x"53";  -- data 
+	en <='1';
+	state<= s9;
+	when s9 =>
+	en<='0';
+	state <= s10;
+	when s10=>
+	rs<='1';
+	din<=x"41";		-- data 
+	en <='1';
+	state<= s11;
+	when s11=>
+	en <= '0';
+	state<= s12;
+	when s12=>
+	rs<='1';
+	din<=x"4e";		-- data 
+	en <='1';
+	state<= s13;
+	when s13=>
+	en <= '0';
+	state<= s14;
+	when s14=>
+	rs<='1';
+	din<=x"4b";		-- data 
+	en <='1';
+	state<= s15;
+	when s15=>
+	en <= '0';
+	state<= s16;
+	when s16=>
+	rs<='1';
+	din<=x"45";		-- data 
+	en <='1';
+	state<= s17;
+	when s17=>
+	en <= '0';
+	state<= s18;
+	when s18=>
+	rs<='1';
+	din<=x"54";		-- data 
+	en <='1';
+	state<= s19;
+	when s19=>
+	en <= '0';
+	
+
+	when others =>
+	null;
+	
+	
+end case;
+end if;
+end if;
+end process;
+	
+end Behavioral;
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+NET "clk" LOC=P9;
+NET "en" LOC=P71;
+NET "rst" LOC=P65;
+NET "rs" LOC=P72;
+NET "data[0]" LOC=P77;
+NET "data[1]" LOC=P84;
+NET "data[2]" LOC=P83;
+NET "data[3]" LOC=P82;
+NET "data[4]" LOC=P81;
+NET "data[5]" LOC=P80;
+NET "data[6]" LOC=P79;
+NET "data[7]" LOC=P75;

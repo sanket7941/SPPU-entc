@@ -1,0 +1,106 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date:    15:10:15 07/25/2017 
+-- Design Name: 
+-- Module Name:    fifo4bit1 - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_unsigned.ALL;
+use IEEE.STD_LOGIC_arith.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity fifo4bit1 is
+Port ( clk : in  STD_LOGIC;
+           rst : in  STD_LOGIC;
+           din : in  STD_LOGIC_VECTOR (3 downto 0);
+           dout : out  STD_LOGIC_VECTOR (3 downto 0);
+           rw : in  STD_LOGIC;
+           empty : out  STD_LOGIC;
+			  mclk : out  STD_LOGIC;
+           full : out  STD_LOGIC);
+
+end fifo4bit1;
+architecture Behavioral of fifo4bit1 is
+
+type mem_type is array (0 to 7) of std_logic_vector(3 downto 0);
+signal memory:mem_type:=(others=>(others=>'0'));
+signal addr:std_logic_vector(2 downto 0);
+signal clk_div:std_logic_vector(27 downto 0);
+
+begin
+	process(din,clk,rst,rw,addr,memory) 
+	begin
+	if clk_div(27)='1' and clk_div(27)'event then
+	clk_div <= clk_div + 1;
+	end if;
+	
+			if rst='1' then
+				addr <="000";
+			elsif clk_div(27)='1' and clk_div(27)'event then
+				addr <= addr + 1;
+			if rw='0' then
+				dout<=memory(conv_integer(addr));
+			else 
+				memory(conv_integer(addr))<=din;
+			end if;
+		end if;
+		if addr="111" then
+			full <= '1';
+		else
+			full <= '0';
+		end if;
+		if addr="000" then
+			empty <= '1';
+		else
+			empty <= '0';
+		end if;
+		
+	end process;
+	mclk<=clk_div(27);
+
+
+
+
+end Behavioral;
+
+--------------------------------------------
+fifo ucf
+
+NET"clk" LOC=b8;
+NET"rst" LOC=n3;
+NET"empty" LOC=p4;
+NET"full" LOC=n4;
+NET"din[0]"LOC=p11;
+NET"din[1]" LOC=l3;
+NET"din[2]" LOC=k3;
+NET"din[3]" LOC=b4;
+NET"dout[0]" LOC=m5;
+NET"dout[1]" LOC=m11;
+NET"dout[2]" LOC=p7;
+NET"dout[3]" LOC=p6;
+NET"mclk" LOC=n5;
+
+
+

@@ -1,0 +1,109 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date:    08:18:10 07/26/2017 
+-- Design Name: 
+-- Module Name:    alu2bit - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_unsigned.ALL;
+use IEEE.STD_LOGIC_arith.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity alu2bit is
+Port ( a : in  STD_LOGIC_VECTOR (1 downto 0);
+           b : in  STD_LOGIC_VECTOR (1 downto 0);
+           s : in  STD_LOGIC_VECTOR (2 downto 0);
+           ovf : out  STD_LOGIC;
+           z : out  STD_LOGIC_VECTOR (1 downto 0));
+end alu2bit;
+
+architecture Behavioral of alu2bit is
+signal c0,sign:std_logic;
+signal compb,temp:std_logic_vector(1 downto 0);
+begin
+	process(a,b,s,compb,temp,sign)
+		begin
+   case s is 
+      when "000" =>
+         z <=a + b;
+			--sum1 <= a(0)XOR b(0);
+			c0 <= a(0) AND b(0);
+			ovf <=(a(1) AND b(1))OR(a(1) AND c0)OR(b(1) AND c0);
+				
+      when "001" =>
+			compb<= not b + 1;
+			temp<=a + compb;
+			c0<=a(0) AND compb(0);
+			sign<=(a(1) AND compb(1))OR(a(1) AND c0)OR(compb(1) AND c0);
+			ovf<=not sign;
+			if b="0000"then
+			sign<='1';
+			end if;
+			if sign='0'then
+			z<=not temp + 1;
+			else
+			z <= temp;
+			end if;	
+      when "010" =>
+         z<=a and b;
+			ovf<='0';
+      when "011" =>
+         z<=a or b;
+			ovf<='0';
+      when "100" =>
+         z<=a nand b;
+			ovf<='0';
+      when "101" =>
+         z<=a nor b;
+			ovf<='0';
+      when "110" =>
+         z<=a xor b;
+			ovf<='0';
+      when "111" =>
+         z<=a xnor b;
+			ovf<='0';
+      when others =>
+         z<=a;
+   end case;
+	end process;
+
+
+end Behavioral;
+--------------------------------------
+ALU ucf
+
+
+UCF FILE:
+
+NET "A[0]" LOC="L3";
+NET "A[1]" LOC="K3";
+NET "B[0]" LOC="B4";
+NET "B[1]" LOC="G3";
+NET "S[0]" LOC="F3";
+NET "S[1]" LOC="E2";
+NET "S[2]" LOC="N3";
+NET "Y[0]" LOC="M5";
+NET "Y[1]" LOC="M11"; 
+NET "OV" LOC="P7";

@@ -1,0 +1,102 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_unsigned.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity shift_register is
+    Port ( Pin : in  STD_LOGIC_VECTOR (3 downto 0);
+           clk : in  STD_LOGIC;
+           Sin : in  STD_LOGIC;
+           mode : in  STD_LOGIC_VECTOR (1 downto 0);
+           load : in  STD_LOGIC;
+           Po : inout  STD_LOGIC_VECTOR (3 downto 0);
+           clk_out : out  STD_LOGIC;
+           So : out  STD_LOGIC);
+end shift_register;
+
+architecture Behavioral of shift_register is
+signal reg : std_logic_vector(3 downto 0);
+signal clk_div : std_logic_vector (27 downto 0);
+
+begin
+
+process(clk,Pin,Sin,mode,load,Po,reg,clk_div) 
+
+begin
+
+if rising_edge(clk) then
+clk_div <= clk_div+1;
+end if;
+
+if clk_div(27)='1' and clk_div(27)'event then
+case mode is 
+when "00"=>            --PIPO
+Po <= Pin;
+So <= '0';
+
+when"01" =>            --PISO
+if load='1'
+then reg <= Pin;
+else 
+reg(3 downto 1)<=reg(2 downto 0);
+end if;
+Po<="0000";
+So<=reg(3);
+
+when"10" =>            --SIPO
+if load='1'
+then Po(3 downto 1)<=Po(2 downto 0);
+Po(0)<=Sin;
+end if;
+So<='0';
+
+when"11"=>              --SISO
+REG(3 DOWNTO 1)<=REG(2 DOWNTO 0);
+REG(0)<=Sin;
+So<=reg(3);
+Po<="0000";
+
+when others=>
+null;
+end case;
+
+end if;
+
+end process;
+clk_out<=clk_div(27);
+end Behavioral;
+
+------------------------------
+
+NET "Pin[0]"  LOC= P11;
+NET "Pin[1]"  LOC= l3;
+NET "Pin[2]"  LOC= k3;
+NET "Pin[3]"  LOC= b4;
+NET "mode[0]"  LOC= e2;
+NET "mode[1]"  LOC= n3;
+NET "Po[0]"  LOC=m5;
+NET "Po[1]"  LOC=m11;
+NET "Po[2]"  LOC=p7;
+NET "Po[3]"  LOC=p6;
+NET "Sin"  	LOC= g3;
+NET "So"  	LOC=n5;
+NET "load"  LOC=f3;
+NET "clk"  	LOC=b8;
+NET  "clk_out" LOC=n4;
+
+
+
+
+
+
+
+
+
+
